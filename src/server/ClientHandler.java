@@ -1,4 +1,4 @@
-package client;
+package server;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -9,8 +9,9 @@ import java.io.OutputStreamWriter;
 import java.io.InputStreamReader;
 
 public class ClientHandler implements Runnable{
-
+	// The list of all connections of users
 	public static ArrayList<ClientHandler> clients = new ArrayList<>();
+	
 	private Socket socket;
 	private BufferedReader bufferedReader;
 	private BufferedWriter bufferedWriter;
@@ -19,17 +20,19 @@ public class ClientHandler implements Runnable{
 	public ClientHandler(Socket socket){
 		try {
 			this.socket = socket;
-			bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-			bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			username = bufferedReader.readLine();
+			this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+			this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			this.username = bufferedReader.readLine();
+			clients.add(this);
+			brodcastMessage(username + " has joined the chat");
 		} catch (IOException e) {
 			e.printStackTrace();
 			closeAll();
 		}
-		clients.add(this);
-		brodcastMessage(username + " has joined the chat");
 	}
 	
+	// This method is responsible for writing a messages 
+	// in client and sending them to brodcastMessage method
 	@Override
 	public void run() {
 		while(socket.isConnected()) {
@@ -44,22 +47,24 @@ public class ClientHandler implements Runnable{
 		
 	}
 	
+	// Closing all and removing this client from the list of connections
 	public void closeAll() {
-		removeClient();
 		try {
+			clients.remove(this);
 			socket.close();
 			bufferedReader.close();
 			bufferedWriter.close();
+			brodcastMessage(username + " has left the chat");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
 	}
 	
-	
+	// This method responsible for transmit a messages
 	public void brodcastMessage(String message) {
 		for (ClientHandler clientHandler : clients) {
-			if(!clientHandler.username.equals(username)) {
+			// Transmitting message to all users except this object
+			if(!clientHandler.username.equals(this.username)) {
 				try {
 					clientHandler.bufferedWriter.write(message);
 					clientHandler.bufferedWriter.newLine();
@@ -69,10 +74,5 @@ public class ClientHandler implements Runnable{
 				}
 			}
 		}
-	}
-	
-	public void removeClient() {
-		clients.remove(this);
-		brodcastMessage(username + " has left the chat");
 	}
 }

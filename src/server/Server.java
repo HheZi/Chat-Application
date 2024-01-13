@@ -4,24 +4,25 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import client.ClientHandler;
-
 public class Server {
-	private int port;
-	
-	
+	// contains port, we using port 1007
+	private final int port;
+
 	private ServerSocket serverSocket;
 	
 	public Server(int port) {
 		this.port = port;
 	}
 	
+	// start the server and waiting for connections
 	public void start() {
 		try {
 			serverSocket = new ServerSocket(port);
 			while(!serverSocket.isClosed()) {
 				Socket socket = serverSocket.accept();
 				System.out.println("New client has connected");
+				
+				// for every connection we will create a separate thread
 				ClientHandler clientHandler = new ClientHandler(socket);
 				Thread thread = new Thread(clientHandler);
 				thread.start();
@@ -31,7 +32,7 @@ public class Server {
 		}
 	}
 	
-	
+	// just closes the ServerSocket
 	public void stopServer() {
 		if(serverSocket != null) {
 			try {

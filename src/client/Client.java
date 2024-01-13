@@ -9,6 +9,9 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
+import gui.GUI;
+
+
 public class Client {
 	private Socket socket;
 	private BufferedReader bufferedReader;
@@ -80,14 +83,12 @@ public class Client {
 	}
 	
 	public static void main(String[] args) throws UnknownHostException, IOException {
-		try(Scanner sc = new Scanner(System.in)){
-			System.out.print("Enter your username: ");
-			String username = sc.nextLine();
-			Socket socket = new Socket("192.168.0.158", 1007);
-			Client client = new Client(socket, username);
-			client.listenForMessages();
-			client.sendMessage();
-		}
+		GUI frame = new GUI();
+		frame.setVisible(true);
+		Socket socket = new Socket("192.168.0.158", 1007);
+		Client client = new Client(socket, frame.getUsername());
+		client.listenForMessages();
+		client.sendMessage();
 		
 	}
 }

@@ -7,11 +7,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class ClientHandler implements Runnable{
 	// The list of all connections of users
-	public static ArrayList<ClientHandler> clients = new ArrayList<>();
+	public static List<ClientHandler> clients = new ArrayList<>();
 	
 	private Socket socket;
 	private BufferedReader bufferedReader;
@@ -36,6 +37,8 @@ public class ClientHandler implements Runnable{
 	
 	// This method is responsible for writing a messages 
 	// in client and sending them to brodcastMessage method
+	// it's also responsible for call the closeAll method
+	// when client exit from the application
 	@Override
 	public void run() {
 		while(socket.isConnected()) {

@@ -5,9 +5,12 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.ConnectException;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Scanner;
+
+import javax.swing.JOptionPane;
 
 import gui.GUI;
 
@@ -17,13 +20,20 @@ public class Client {
 	private BufferedReader bufferedReader;
 	private BufferedWriter bufferedWriter;
 	private String username;
+	private GUI gui;
 	
-	public Client(Socket socket, String username){
+	public Client(Socket socket, GUI gui , String username){
 		try {
+			this.gui = gui;
 			this.socket = socket;
 			this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 			this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			this.username = username;
+			
+			//sending the username to ClientHandler to invoke "username has joined the chat"
+			bufferedWriter.write(username);
+			bufferedWriter.newLine();
+			bufferedWriter.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 			closeAll();
@@ -31,21 +41,13 @@ public class Client {
 	}
 	
 	
-	public void sendMessage() {
+	public void sendMessage(String message, String date) {
 		try {
-			// sending username first
-			bufferedWriter.write(username);
-			bufferedWriter.newLine();
-			bufferedWriter.flush();
-			
 			// writing the message and send
-			try(Scanner sc = new Scanner(System.in)){
-				while(socket.isConnected()) {
-					String message = sc.nextLine();
-					bufferedWriter.write(username + ": " + message);
-					bufferedWriter.newLine();
-					bufferedWriter.flush();
-				}
+			if(!socket.isClosed()) {
+				bufferedWriter.write(date + username + ">> " + message);
+				bufferedWriter.newLine();
+				bufferedWriter.flush();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -61,7 +63,8 @@ public class Client {
 				while(socket.isConnected()) {
 					try {
 						String msgFromGroupChat = bufferedReader.readLine();
-						System.out.println(msgFromGroupChat);
+						gui.setTextToTextAria(msgFromGroupChat);
+					//fix that	
 					} catch (IOException e) {
 						e.printStackTrace();
 						closeAll();
@@ -83,12 +86,21 @@ public class Client {
 	}
 	
 	public static void main(String[] args) throws UnknownHostException, IOException {
+		
 		GUI frame = new GUI();
+		String username = JOptionPane.showInputDialog(frame, "Enter your username");
+		frame.setUsername(username);
 		frame.setVisible(true);
-		Socket socket = new Socket("192.168.0.158", 1007);
-		Client client = new Client(socket, frame.getUsername());
-		client.listenForMessages();
-		client.sendMessage();
+		try {
+			Socket socket = new Socket(InetAddress.getLocalHost().getHostAddress(), 1007);
+			Client client = new Client(socket, frame, username);
+			frame.setClient(client);
+			client.listenForMessages();
+		}catch (ConnectException e) {
+			JOptionPane.showMessageDialog(frame, "Can't connect to server", "Error", JOptionPane.ERROR_MESSAGE);
+			System.exit(1);
+		}
+		
 		
 	}
 }

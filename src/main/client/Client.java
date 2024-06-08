@@ -62,7 +62,6 @@ public class Client {
 				controller.setNewUsername(username);
 				break;
 			case "disconnect":
-				closeAll();
 				controller.disconnectMessage();
 				break;
 		}

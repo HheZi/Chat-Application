@@ -28,6 +28,7 @@ public class ClientHandler implements Runnable{
 			this.username = bufferedReader.readLine();
 			usernameInHex = Integer.toHexString(username.hashCode());
 			
+			
 			synchronized (CLIENTS) {
 				CLIENTS.add(this);
 			}
@@ -93,7 +94,7 @@ public class ClientHandler implements Runnable{
 		synchronized (CLIENTS) {
 			for (ClientHandler clientHandler : CLIENTS) {
 				if(clientHandler != this) {
-						clientHandler.writeMessage(message);
+					clientHandler.writeMessage(message);
 				}
 			}
 		}

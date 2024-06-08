@@ -47,7 +47,7 @@ public class ClientGUI extends JFrame {
             }
         });
 
-        JPanel mainPanel = new JPanel(new BorderLayout());
+        JPanel mainPanel = new JPanel(new BorderLayout(0,10));
         mainPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(mainPanel);
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -116,7 +116,7 @@ public class ClientGUI extends JFrame {
 	
 	public void messageKickedAndExit() {
 		JOptionPane.showMessageDialog(this, "You are kicked from server", "Kicked", JOptionPane.WARNING_MESSAGE);
-		dispose();
+		exit();
 	}
 	
 	private void exit() {

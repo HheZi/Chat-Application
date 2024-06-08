@@ -91,7 +91,7 @@ public class ServerGUI extends JFrame {
 		panelforbuttons.add(Box.createVerticalGlue());
 		
 		
-		JScrollPane scrollPane = new JScrollPane();
+		
 		model = new DefaultTableModel(new String[]{"IP", "Username"},0) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
@@ -99,9 +99,8 @@ public class ServerGUI extends JFrame {
 			}
 		};
 		
-		table = new JTable(model);
+		JScrollPane scrollPane = new JScrollPane(table = new JTable(model));
 		scrollPane.setViewportView(table);
-		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.getTableHeader().setReorderingAllowed(false);
 		table.addMouseListener(new MouseAdapter() {
 			@Override

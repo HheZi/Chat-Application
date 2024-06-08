@@ -19,7 +19,7 @@ public class ServerMain {
 			ServerSocket serverSocket = new ServerSocket(port);
 			Server server = new Server(controller, serverSocket);
 			ServerGUI serverGUI = new ServerGUI(controller); 
-			server.start();
+			server.start();			
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, "This port already in use", "Error", JOptionPane.ERROR_MESSAGE);
 		}

@@ -8,6 +8,7 @@ import main.controller.ControllerServer;
 
 //Автор: Цева Павло
 public class Server {
+	
 	private ServerSocket serverSocket;
 	protected static ControllerServer controller;
 	
